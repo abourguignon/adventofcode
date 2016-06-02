@@ -44,16 +44,70 @@ def has_no_bad_strings(s):
     )
     return bool(not any_bad_string)
 
+def has_non_overlapping_pair(s):
+    """
+    It contains a pair of any two letters that appears at least twice in the
+    string without overlapping, like `xyxy` (`xy`) or `aabcdefgaa` (`aa`),
+    but not like `aaa` (`aa`, but it overlaps).
+    """
+    has_non_overlapping_pair = False
+
+    for i, c in enumerate(s):
+        try:
+            pair = s[i] + s[i+1]
+            if len(s.replace(pair, '')) <= len(s) - 4:
+                has_non_overlapping_pair = True
+                break
+        except IndexError:  # We've reached the end of the string
+            pass
+
+    print 'Non overlapping pair: %s \t=> %s' % (
+        has_non_overlapping_pair,
+        ('OK' if has_non_overlapping_pair else 'not OK')
+    )
+
+    return has_non_overlapping_pair
+
+def has_separated_twin_letters(s):
+    """
+    It contains at least one letter which repeats with exactly one letter
+    between them, like `xyx`, `abcdefeghi` (`efe`), or even `aaa`.
+    """
+    has_separated_twin_letters = False
+    try:
+        has_separated_twin_letters = any(s[i] == s[i+2] for i, c in enumerate(s))
+    except IndexError:  # We've reached the end of the string
+        pass
+
+    print 'Separated twin letters: %s \t=> %s' % (
+        has_separated_twin_letters,
+        ('OK' if has_separated_twin_letters else 'not OK')
+    )
+
+    return has_separated_twin_letters
+
+
 
 nice_strings = 0
+really_nice_strings = 0
 
 for string in input.splitlines():
     string = string.lower()  # Just in case of vicious trap...
+
     print '\n>>>', string
+
     if has_at_least_three_vowels(string) and has_twin_letters(string) and has_no_bad_strings(string):
-        print 'Nice string !'
+        print 'Nice string ! (step one)'
         nice_strings += 1
     else:
-        print 'Bad string :('
+        print 'Bad string :( (step one)'
 
-print '\n\n\nNice strings: %s/%s' % (nice_strings, len(input.splitlines()))
+    if has_non_overlapping_pair(string) and has_separated_twin_letters(string):
+        print 'Really nice string ! (step two)'
+        really_nice_strings += 1
+    else:
+        print 'Really bad string :((( (step two)'
+
+print '\n\n\n'
+print 'Nice strings (step one): %s/%s' % (nice_strings, len(input.splitlines()))
+print 'Really nice strings (step two): %s/%s' % (really_nice_strings, len(input.splitlines()))
